@@ -30,7 +30,7 @@ urls = driver.find_elements(By.TAG_NAME, "a")
 
 
 def link_finder(link):
-    time.sleep(2)
+    time.sleep(0.5)
     driver.get(link)
     links = driver.find_elements(By.TAG_NAME, "a")
     return [link.get_attribute("href") for link in links]
@@ -53,7 +53,7 @@ result.extend(pages)
 
 for links in lists:
     for link in links:
-        if link not in result and link:
+        if link not in result and link and re.search(f"^(http://|https://)(?:\w+)*{get_domain.group(2)}/", link, re.IGNORECASE):
             result.append(link)
 
 
