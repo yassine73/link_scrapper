@@ -12,34 +12,44 @@ import re
 path = ChromeDriverManager().install()
 driver = webdriver.Chrome(service=Service(executable_path=path))
 
-url = "https://freecodecamp.org/"
+url = "https://openclassrooms.com/"
 driver.get(url)
 
 
 get_domain = re.search(r"^(http://|https://)((?:\w+\.)*(?:\w+))/$", url)
+
 
 pages = []
 
 
 # Locating Landing Page
 time.sleep(0.5)
+WebDriverWait(driver, 5).until(
+    ec.presence_of_all_elements_located((By.TAG_NAME, "a"))
+)
 urls = driver.find_elements(By.TAG_NAME, "a")
 
 
 def link_finder(link):
-    time.sleep(0.5)
+    time.sleep(2)
     driver.get(link)
+
+    WebDriverWait(driver, 5).until(
+        ec.presence_of_all_elements_located((By.TAG_NAME, "a"))
+    )
     links = driver.find_elements(By.TAG_NAME, "a")
     return [link.get_attribute("href") for link in links]
 
 
 # Get Link from Parent
 for link in urls:
-    if link.get_attribute("href") not in pages and re.search(f"^(http://|https://)(?:\w+\.)*{get_domain.group(2)}/", link.get_attribute("href"), re.IGNORECASE):
+    if link.get_attribute("href") not in pages and re.search(f"^(http://|https://)(?:\w+\.)*{get_domain.group(2)}/", link.get_attribute("href"), re.IGNORECASE) and link.get_attribute("href"):
         pages.append(link.get_attribute("href"))
 
 
 lists = []
+
+# Links from children
 
 for page in pages:
     lists.append(link_finder(page))
@@ -52,6 +62,8 @@ for links in lists:
         if link not in result and link and re.search(f"^(http://|https://)(?:\w+\.)*{get_domain.group(2)}/", link, re.IGNORECASE):
             result.append(link)
 
+
+# export in links.txt
 
 with open("links.txt", "w+") as file:
     for link in sorted(result):
