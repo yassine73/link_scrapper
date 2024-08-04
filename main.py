@@ -12,7 +12,7 @@ import re
 path = ChromeDriverManager().install()
 driver = webdriver.Chrome(service=Service(executable_path=path))
 
-url = ""
+url = "https://stackoverflow.com/"
 driver.get(url)
 
 
