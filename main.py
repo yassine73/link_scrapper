@@ -13,6 +13,11 @@ path = ChromeDriverManager().install()
 driver = webdriver.Chrome(service=Service(executable_path=path))
 
 url = "https://stackoverflow.com/"
+
+get_domain = re.search(r"^(http://|https://)((?:\w+\.)*(?:\w+))/$", url)
+
+
+
 driver.get(url)
 
 
@@ -33,7 +38,7 @@ def link_finder(link):
 
 # Get Link from Parent
 for link in urls:
-    if re.search(f'^(https?://(\w+\.)*)({url.replace("https://","").replace("http://","").replace(".", "\.").replace("/", "")})((/\w+)*)$', link.get_attribute("href")):
+    if re.search(f"^(http://|https://)(?:\w+)*{get_domain.group(2)}/", link.get_attribute("href"), re.IGNORECASE):
         if link.get_attribute("href") not in pages:
             pages.append(link.get_attribute("href"))
 
@@ -44,18 +49,18 @@ for page in pages:
     lists.append(link_finder(page))
 
 result = []
+result.extend(pages)
 
 for links in lists:
     for link in links:
-        if link not in result:
+        if link not in result and link:
             result.append(link)
 
 
 with open("links.txt", "w+") as file:
-    for link in result:
+    for link in sorted(result):
         file.write(link)
         file.write("\n")
-
 
 
 
@@ -102,4 +107,4 @@ with open("links.txt", "w+") as file:
 #             file.write(driver.page_source)
 
 
-time.sleep(10)
+# time.sleep(10)
