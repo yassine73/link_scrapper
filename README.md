@@ -1,2 +1,2 @@
-# link_scrapper
-Get links from a website you give
+# link_scraper
+Selenium link scraper
